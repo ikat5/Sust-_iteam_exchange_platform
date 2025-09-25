@@ -204,7 +204,7 @@ const CategoryPage = () => {
         {/* If category key doesn't exist, show a clear "not available" message */}
         {!categoryExists ? (
           <div className="text-center py-20">
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Products for {displayName} are not available right now.</h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">Products are not available right now.</h3>
             <p className="text-gray-500 mb-6">We don't have listings under this category at the moment. You can list an item or browse other categories.</p>
             <div className="flex justify-center gap-4">
               <Link

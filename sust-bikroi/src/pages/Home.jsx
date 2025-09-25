@@ -1,9 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import ProductBox from '../components/ProductBox';
+import categories from '../components/Categories';
 
 const Home = () => {
-  // Sample product data - in real app, this would come from API
   const featuredProducts = [
     {
       id: 1,
@@ -45,17 +45,6 @@ const Home = () => {
       image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=200&fit=crop",
       condition: "Good"
     }
-  ];
-
-  const categories = [
-    { name: "Cycles", icon: "🚲", link: "/category/cycle", count: "25 items" },
-    { name: "Books", icon: "📚", link: "/category/book", count: "150 items" },
-    { name: "Furniture", icon: "🪑", link: "/category/furniture", count: "45 items" },
-    { name: "Motorcycles", icon: "🏍️", link: "/category/motorcycle", count: "12 items" },
-    { name: "Electronics", icon: "📱", link: "/category/electronics", count: "80 items" },
-    { name: "Mess_boarder", icon: "🏠", link: "/category/Mess_boarder", count: "60 items" },
-    { name: "Clothing", icon: "👕", link: "/category/clothing", count: "35 items" },
-    { name: "Sports", icon: "⚽", link: "/category/sports", count: "20 items" }
   ];
 
   return (
