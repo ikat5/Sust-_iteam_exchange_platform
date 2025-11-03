@@ -1,8 +1,13 @@
 # Ignore environment files
-.env
+backend/.env
 
 # Ignore node modules
 node_modules/
 
 # Ignore logs
 *.log
+
+
+# Build output
+dist/
+build/
