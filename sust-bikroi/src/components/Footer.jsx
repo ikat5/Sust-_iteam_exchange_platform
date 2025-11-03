@@ -42,10 +42,11 @@ const Footer = () => {
             <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li><Link to="/" className="text-gray-300 hover:text-white transition-colors">Home</Link></li>
-              <li><Link to="/categories" className="text-gray-300 hover:text-white transition-colors">Categories</Link></li>
+              <li><Link to="/products" className="text-gray-300 hover:text-white transition-colors">All Products</Link></li>
               <li><Link to="/sell" className="text-gray-300 hover:text-white transition-colors">Sell Product</Link></li>
               <li><Link to="/about" className="text-gray-300 hover:text-white transition-colors">About Us</Link></li>
               <li><Link to="/contact" className="text-gray-300 hover:text-white transition-colors">Contact</Link></li>
+              <li><Link to="/profile" className="text-gray-300 hover:text-white transition-colors">Profile</Link></li>
             </ul>
           </div>
 
@@ -53,13 +54,14 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4">Categories</h3>
             <ul className="space-y-2">
-              <li><Link to="/category/cycle" className="text-gray-300 hover:text-white transition-colors">Cycles</Link></li>
-              <li><Link to="/category/book" className="text-gray-300 hover:text-white transition-colors">Books</Link></li>
+              <li><Link to="/category/Cycles" className="text-gray-300 hover:text-white transition-colors">Cycles</Link></li>
+              <li><Link to="/category/Books" className="text-gray-300 hover:text-white transition-colors">Books</Link></li>
               <li><Link to="/category/furniture" className="text-gray-300 hover:text-white transition-colors">Furniture</Link></li>
-              <li><Link to="/category/motorcycle" className="text-gray-300 hover:text-white transition-colors">Motorcycles</Link></li>
-              <li><Link to="/category/electronics" className="text-gray-300 hover:text-white transition-colors">Electronics</Link></li>
-              <li><Link to="/category/household" className="text-gray-300 hover:text-white transition-colors">Household</Link></li>
-               <li><Link to="/category/Mess_boarder" className="text-gray-300 hover:text-white transition-colors">Mess_border</Link></li>
+              <li><Link to="/category/Motorcycles" className="text-gray-300 hover:text-white transition-colors">Motorcycles</Link></li>
+              <li><Link to="/category/Electronics" className="text-gray-300 hover:text-white transition-colors">Electronics</Link></li>
+              <li><Link to="/category/Clothing" className="text-gray-300 hover:text-white transition-colors">Clothing</Link></li>
+              <li><Link to="/category/Sports" className="text-gray-300 hover:text-white transition-colors">Sports</Link></li>
+              <li><Link to="/category/Others" className="text-gray-300 hover:text-white transition-colors">Others</Link></li>
             </ul>
           </div>
         </div>
@@ -82,3 +84,4 @@ const Footer = () => {
 };
 
 export default Footer;
+

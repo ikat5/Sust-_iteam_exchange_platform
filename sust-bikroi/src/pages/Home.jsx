@@ -1,51 +1,43 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ProductBox from '../components/ProductBox';
-import categories from '../components/Categories';
+import { productService } from '../services/productService';
+import { showError } from '../utils/notifications';
 
 const Home = () => {
-  const featuredProducts = [
-    {
-      id: 1,
-      name: "MacBook Pro 13-inch",
-      description: "Excellent condition MacBook Pro, perfect for students",
-      price: 45000,
-      sellerName: "Rahim Ahmed",
-      sellerPhone: "01712345678",
-      image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=300&h=200&fit=crop",
-      condition: "Used"
-    },
-    {
-      id: 2,
-      name: "Road Bike - Trek",
-      description: "Lightweight road bike, great for campus commuting",
-      price: 12000,
-      sellerName: "Fatima Khan",
-      sellerPhone: "01898765432",
-      image: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=300&h=200&fit=crop",
-      condition: "Good"
-    },
-    {
-      id: 3,
-      name: "Physics Textbooks Set",
-      description: "Complete set of physics textbooks for engineering students",
-      price: 2500,
-      sellerName: "Karim Hassan",
-      sellerPhone: "01987654321",
-      image: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=300&h=200&fit=crop",
-      condition: "Used"
-    },
-    {
-      id: 4,
-      name: "Study Table & Chair",
-      description: "Wooden study table with comfortable chair",
-      price: 3500,
-      sellerName: "Ayesha Rahman",
-      sellerPhone: "01612345678",
-      image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=200&fit=crop",
-      condition: "Good"
-    }
+  const [featuredProducts, setFeaturedProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const categories = [
+    { name: "Electronics", icon: "📱", link: "/category/electronics" },
+    { name: "Books", icon: "📚", link: "/category/books" },
+    { name: "Furniture", icon: "🪑", link: "/category/furniture" },
+    { name: "Cycles", icon: "🚲", link: "/category/cycles" },
+    { name: "Motorcycles", icon: "🏍️", link: "/category/motorcycles" },
+    { name: "Clothing", icon: "👕", link: "/category/clothing" },
+    { name: "Sports", icon: "⚽", link: "/category/sports" },
+    { name: "Others", icon: "📦", link: "/category/others" }
   ];
+
+  useEffect(() => {
+    const fetchRecentProducts = async () => {
+      try {
+        setLoading(true);
+        const result = await productService.getRecentProducts();
+        if (result.success) {
+          setFeaturedProducts(result.data);
+        } else {
+          showError(result.message);
+        }
+      } catch (error) {
+        showError('Failed to load recent products');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRecentProducts();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -62,7 +54,7 @@ const Home = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
-                to="/categories"
+                to="/products"
                 className="bg-white text-green-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
               >
                 Browse Products
@@ -93,7 +85,6 @@ const Home = () => {
               >
                 <div className="text-4xl mb-3">{category.icon}</div>
                 <h3 className="font-semibold text-gray-900 mb-1">{category.name}</h3>
-                <p className="text-sm text-gray-500">{category.count}</p>
               </Link>
             ))}
           </div>
@@ -114,11 +105,33 @@ const Home = () => {
               View All Products →
             </Link>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {featuredProducts.map((product) => (
-              <ProductBox key={product.id} product={product} />
-            ))}
-          </div>
+          {loading ? (
+            <div className="flex justify-center items-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+            </div>
+          ) : featuredProducts.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {featuredProducts.map((product) => (
+                <ProductBox key={product._id} product={product} />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No products available</h3>
+              <p className="text-gray-500 mb-4">Be the first to list a product!</p>
+              <Link
+                to="/sell"
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+              >
+                List Your Product
+              </Link>
+            </div>
+          )}
         </div>
       </section>
 
@@ -178,3 +191,4 @@ const Home = () => {
 };
 
 export default Home;
+

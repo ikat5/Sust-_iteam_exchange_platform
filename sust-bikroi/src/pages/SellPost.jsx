@@ -1,20 +1,57 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { productService } from '../services/productService';
+import { showSuccess, showError } from '../utils/notifications';
 
 const SellPost = () => {
   const [formData, setFormData] = useState({
-    name: '',
+    productName: '',
     description: '',
     price: '',
     category: '',
     condition: '',
     location: '',
-    phone: '',
-    email: '',
     images: []
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [searchParams] = useSearchParams();
+  const editId = searchParams.get('edit');
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    // Redirect if not authenticated
+    if (!isAuthenticated) {
+      showError('Please login to post a product');
+      navigate('/login');
+    }
+    // If editing, fetch product details to prefill
+    const prefill = async () => {
+      if (editId) {
+        try {
+          const res = await productService.getProductById(editId);
+          if (res.success) {
+            const p = res.data;
+            setFormData({
+              productName: p.productName || '',
+              description: p.description || '',
+              price: p.price || '',
+              category: p.category || '',
+              condition: p.condition || '',
+              location: p.location || '',
+              images: []
+            });
+          } else {
+            showError(res.message);
+          }
+        } catch (e) {
+          showError('Failed to load product for edit');
+        }
+      }
+    };
+    prefill();
+  }, [isAuthenticated, navigate]);
 
   const categories = [
     'Electronics',
@@ -22,18 +59,15 @@ const SellPost = () => {
     'Furniture',
     'Cycles',
     'Motorcycles',
-    'Household',
     'Clothing',
     'Sports',
-    'Other'
+    'Others'
   ];
 
   const conditions = [
-    'Brand New',
-    'Like New',
-    'Good',
-    'Fair',
-    'Used'
+    'new',
+    'used',
+    'refurbished'
   ];
 
   const handleChange = (e) => {
@@ -60,14 +94,29 @@ const SellPost = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (formData.images.length === 0) {
+      showError('Please upload at least one image');
+      return;
+    }
+    
     setIsLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      const result = editId
+        ? await productService.updateProduct(editId, formData)
+        : await productService.createProduct(formData);
+      if (result.success) {
+        showSuccess(editId ? 'Product updated successfully!' : 'Product posted successfully!');
+        navigate(editId ? `/product/${editId}` : '/');
+      } else {
+        showError(result.message);
+      }
+    } catch (error) {
+      showError('Failed to post product. Please try again.');
+    } finally {
       setIsLoading(false);
-      alert('Product posted successfully!');
-      navigate('/');
-    }, 2000);
+    }
   };
 
   return (
@@ -85,15 +134,15 @@ const SellPost = () => {
               <h2 className="text-xl font-semibold text-gray-900 border-b pb-2">Product Information</h2>
               
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="productName" className="block text-sm font-medium text-gray-700 mb-2">
                   Product Name *
                 </label>
                 <input
                   type="text"
-                  id="name"
-                  name="name"
+                  id="productName"
+                  name="productName"
                   required
-                  value={formData.name}
+                  value={formData.productName}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   placeholder="Enter product name"
@@ -192,44 +241,6 @@ const SellPost = () => {
               </div>
             </div>
 
-            {/* Contact Information */}
-            <div className="space-y-6">
-              <h2 className="text-xl font-semibold text-gray-900 border-b pb-2">Contact Information</h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-                    Phone Number *
-                  </label>
-                  <input
-                    type="tel"
-                    id="phone"
-                    name="phone"
-                    required
-                    value={formData.phone}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    placeholder="Enter your phone number"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                    Email Address *
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    required
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    placeholder="Enter your email"
-                  />
-                </div>
-              </div>
-            </div>
 
             {/* Image Upload */}
             <div className="space-y-6">
@@ -316,3 +327,4 @@ const SellPost = () => {
 };
 
 export default SellPost;
+
