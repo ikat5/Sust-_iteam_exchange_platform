@@ -31,10 +31,11 @@ const Header = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo and Site Name */}
           <Link to="/" className="flex items-center space-x-2">
-            <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
+            <img src="/logo.jpg" alt="Logo" className="w-12 h-12"/>
+            {/* <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-lg">SB</span>
-            </div>
-            <span className="text-xl font-bold text-gray-900">Sust Bikroi</span>
+            </div> */}
+            <span className="text-xl font-bold text-gray-900">SUST Item Exchange Platform</span>
           </Link>
 
           {/* Search Bar */}

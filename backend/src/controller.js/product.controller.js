@@ -9,7 +9,7 @@ const createProduct = asyncHandler(async (req, res) => {
   console.log(req.body)
   const { productName, description, category, price, condition, location } = req.body;
 
-  if ([productName, description, category, price, condition, location].some(f => !f || f.trim() === "")) {
+  if ([productName, category, price, condition, location].some(f => !f || f.trim() === "")) {
     throw new ApiError(400, "All fields are required");
   }
 
