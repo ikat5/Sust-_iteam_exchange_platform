@@ -125,7 +125,7 @@ git clone https://github.com/Hadis201/University_item_exchange_platform.gitcd Un
 Create a `.env` file in the `backend` directory:
 
 ```env
-# Server ConfigurationPORT=5000NODE_ENV=development# Database ConfigurationMONGODB_URI=mongodb://localhost:27017/sust_exchange# Or use MongoDB Atlas:# MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/sust_exchange# JWT ConfigurationJWT_SECRET=your_super_secret_jwt_key_change_this_in_productionJWT_REFRESH_SECRET=your_refresh_token_secret_key_change_thisACCESS_TOKEN_EXPIRY=1dREFRESH_TOKEN_EXPIRY=10d# Cloudinary ConfigurationCLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_nameCLOUDINARY_API_KEY=your_cloudinary_api_keyCLOUDINARY_API_SECRET=your_cloudinary_api_secret# CORS Configuration (optional)CORS_ORIGIN=http://localhost:5173
+DIY
 ```
 
 ### Frontend Configuration
