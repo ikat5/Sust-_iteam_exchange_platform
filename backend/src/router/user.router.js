@@ -11,11 +11,18 @@ import {
   refreshAccesstoken, 
   getUserProfile,
   updateAccountdetails,
-  changecurrentpassword
+  changecurrentpassword,
+  verifySignUpOTP,
+  forgetPassword,
+  resetPassword
 } from "../controller.js/user.controller.js";
 
 // auth
 router.post("/signup", signUp);
+//router.post("/signup", signUp);
+router.post("/verify-otp", verifySignUpOTP);
+router.post("/forgot-password", forgetPassword);
+router.post("/reset-password", resetPassword);
 router.post("/login", loginUser);
 router.post("/logout", verifyUser, logoutUser);
 

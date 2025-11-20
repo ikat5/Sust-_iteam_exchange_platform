@@ -139,6 +139,55 @@ export const authService = {
         message: error.response?.data?.message || 'Failed to change password'
       };
     }
+  },
+
+  // Verify OTP for signup
+  verifyOTP: async ({ email, otp }) => {
+    try {
+      const response = await api.post('/user/verify-otp', { email, otp });
+      return {
+        success: true,
+        data: response.data.data,
+        message: response.data.message
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.response?.data?.message || 'OTP verification failed'
+      };
+    }
+  },
+
+  // Forgot password
+  forgotPassword: async ({ userName }) => {
+    try {
+      const response = await api.post('/user/forgot-password', { userName });
+      return {
+        success: true,
+        message: response.data.message
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.response?.data?.message || 'Failed to send reset instructions'
+      };
+    }
+  },
+
+  // Reset password
+  resetPassword: async ({ email, otp, newPassword }) => {
+    try {
+      const response = await api.post('/user/reset-password', { email, otp, newPassword });
+      return {
+        success: true,
+        message: response.data.message
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.response?.data?.message || 'Failed to reset password'
+      };
+    }
   }
 };
 

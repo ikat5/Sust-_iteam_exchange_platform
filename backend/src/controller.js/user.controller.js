@@ -7,6 +7,9 @@ import jwt from "jsonwebtoken"
 import { upload } from "../middleware/multermiddleware.js";
 import mongoose from "mongoose";
 import { Product } from "../model/product.model.js";
+import { Otp } from "../model/Otp.model.js";
+import { sendPasswordResetEmail,sendVerificationEamil,senWelcomeEmail } from "../middleware/Email.js";
+//import { sendVerificationEamil, senWelcomeEmail, sendPasswordResetEmail } from "../utils/email.js";
 
 const generateAccessToken = async (userId) => {
    try {
@@ -22,43 +25,172 @@ const generateAccessToken = async (userId) => {
    }
 }
 
-const signUp = asyncHandler(async (req, res) => {
-   const { fullName = "", email = "", userName = "", password = "",studentId = "",phoneNumber = "" } = req.body
 
-   if ([fullName, email, userName, password,studentId,phoneNumber].some((field) => String(field).trim() === "")) {
-      throw new ApiError(400, "All fields are required")
-   }
+ const signUp = asyncHandler(async (req, res) => {
+  const { fullName, email, userName, password, studentId, phoneNumber } = req.body;
 
-   const existedUser = await User.findOne({
-      $or: [{ userName }, { email }]
-   })
-   if (existedUser) {
-      throw new ApiError(400, "User with email or username already exists")
-   }
+  if ([fullName, email, userName, password, studentId, phoneNumber].some((f) => !f?.trim())) {
+    throw new ApiError(400, "All fields are required");
+  }
+
+  if (!email.includes("@student.sust.edu")) {
+    throw new ApiError(400, "Please use your valid student email (@student.sust.edu)");
+  }
+
+  const existedUser = await User.findOne({ $or: [{ email }, { userName }] });
+  if (existedUser) {
+    throw new ApiError(400, "User with this email or username already exists");
+  }
+
+  // Generate OTP
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+  // Save OTP in MongoDB
+  await Otp.findOneAndUpdate(
+    { email, purpose: "signup" },
+    {
+      otp,
+      purpose: "signup",
+      expiresAt: new Date(Date.now() + 5 * 60 * 1000),
+      userData: { fullName, email, userName, password, studentId, phoneNumber },
+    },
+    { upsert: true, new: true }
+  );
+
+  // Send Email
+  await sendVerificationEamil(email, otp);
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "OTP sent to your email for verification"));
+});
 
 
-   const user = await User.create({
-      fullName,
-      email,
-      password,
-      userName: userName.toLowerCase(),
-      studentId,
-      phoneNumber,
+// const signUp = asyncHandler(async (req, res) => {
+//    const { fullName = "", email = "", userName = "", password = "",studentId = "",phoneNumber = "" } = req.body
+
+//    if ([fullName, email, userName, password,studentId,phoneNumber].some((field) => String(field).trim() === "")) {
+//       throw new ApiError(400, "All fields are required")
+//    }
+
+//    const existedUser = await User.findOne({
+//       $or: [{ userName }, { email }]
+//    })
+//    if (existedUser) {
+//       throw new ApiError(400, "User with email or username already exists")
+//    }
+
+
+//    const user = await User.create({
+//       fullName,
+//       email,
+//       password,
+//       userName: userName.toLowerCase(),
+//       studentId,
+//       phoneNumber,
       
-   })
+//    })
 
-   const createdUser = await User.findById(user.id).select(
-      "-password -refreshToken"
-   )
-   if (!createdUser) {
-      throw new ApiError(400, "something went wrong when created user")
-   }
+//    const createdUser = await User.findById(user.id).select(
+//       "-password -refreshToken"
+//    )
+//    if (!createdUser) {
+//       throw new ApiError(400, "something went wrong when created user")
+//    }
 
-   return res.status(201).json(
-      new ApiResponse(201, createdUser, "user registered successfully")
-   )
+//    return res.status(201).json(
+//       new ApiResponse(201, createdUser, "user registered successfully")
+//    )
 
-})
+// })
+
+//verify otp and createuser
+export const verifySignUpOTP = asyncHandler(async (req, res) => {
+  const { email, otp } = req.body;
+  const record = await Otp.findOne({ email, purpose: "signup" });
+
+  if (!record) throw new ApiError(400, "No OTP request found for this email");
+  if (record.otp !== otp) throw new ApiError(400, "Invalid OTP");
+  if (record.expiresAt < new Date()) throw new ApiError(400, "OTP expired");
+
+  const { fullName, userName, password, studentId, phoneNumber } = record.userData;
+
+  //const hashedPassword = await bcrypt.hash(password, 10);
+  const user = await User.create({
+    fullName,
+    email,
+    userName: userName.toLowerCase(),
+    password,
+    studentId,
+    phoneNumber,
+  });
+
+  await senWelcomeEmail(email, fullName);
+
+  // delete otp
+  await Otp.deleteOne({ email, purpose: "signup" });
+
+  return res
+    .status(201)
+    .json(new ApiResponse(201, { id: user._id, email: user.email }, "Signup successful and verified"));
+});
+
+export const forgetPassword = asyncHandler(async (req, res) => {
+  const { userName } = req.body;
+
+  const user = await User.findOne({ userName });
+  if (!user) throw new ApiError(404, "User not found");
+
+  const email = user.email;
+  if (!email.includes("@student.sust.edu")) {
+    throw new ApiError(400, "Please use your valid student email (@student.sust.edu)");
+  }
+
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+  await Otp.findOneAndUpdate(
+    { email, purpose: "reset" },
+    { otp, purpose: "reset", expiresAt: new Date(Date.now() + 5 * 60 * 1000) },
+    { upsert: true, new: true }
+  );
+
+  await sendPasswordResetEmail(email, otp);
+
+  return res.status(200).json(new ApiResponse(200, {}, "OTP sent to your email for password reset"));
+});
+
+
+
+
+
+export const resetPassword = asyncHandler(async (req, res) => {
+  const { email, otp, newPassword } = req.body;
+
+  // Step 1: Find OTP record
+  const record = await Otp.findOne({ email, purpose: "reset" });
+  if (!record) throw new ApiError(400, "No OTP found");
+  if (record.otp !== otp) throw new ApiError(400, "Invalid OTP");
+  if (record.expiresAt < new Date()) throw new ApiError(400, "OTP expired");
+
+  // Step 2: Find the user
+  const user = await User.findOne({ email });
+  if (!user) throw new ApiError(404, "User not found");
+
+  // Step 3: Set new password (auto-hash via userSchema.pre("save"))
+  user.password = newPassword;
+  await user.save(); // will trigger the pre('save') hook
+
+  // Step 4: Delete OTP record
+  await Otp.deleteOne({ email, purpose: "reset" });
+
+  // Step 5: Respond
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "Password reset successful"));
+});
+
+
+
 
 
 const loginUser = asyncHandler(async (req, res) => {

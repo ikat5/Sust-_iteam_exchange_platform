@@ -1,22 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { authService } from '../services/authService';
 import { showSuccess, showError } from '../utils/notifications';
 
-const Login = () => {
+const ForgotPassword = () => {
   const [formData, setFormData] = useState({
-    userName: '',
-    password: ''
+    userName: ''
   });
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { login, isAuthenticated } = useAuth();
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/');
-    }
-  }, [isAuthenticated, navigate]);
 
   const handleChange = (e) => {
     setFormData({
@@ -30,15 +22,16 @@ const Login = () => {
     setIsLoading(true);
     
     try {
-      const result = await login(formData);
+      const result = await authService.forgotPassword(formData);
       if (result.success) {
-        showSuccess('Login successful! Welcome back.');
-        navigate('/');
+        showSuccess('OTP sent to your email! Please check your inbox.');
+        // Navigate to reset password page with username (we'll need to get email from backend or user)
+        navigate('/reset-password', { state: { userName: formData.userName } });
       } else {
-        showError(result.message || 'Invalid credentials.');
+        showError(result.message || 'Failed to send reset instructions.');
       }
     } catch (error) {
-      showError('Login failed. Please check your connection and try again.');
+      showError('Request failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -52,33 +45,27 @@ const Login = () => {
           <Link to="/" className="inline-block mb-8 animate-fade-in-down">
             <img src="/logo.jpg" alt="Logo" className="w-24 h-24 rounded-2xl mx-auto shadow-lg"/>
           </Link>
-          <h1 className="text-4xl font-bold mb-4 animate-fade-in-up">Welcome Back!</h1>
+          <h1 className="text-4xl font-bold mb-4 animate-fade-in-up">Forgot Password?</h1>
           <p className="text-lg text-green-100 animate-fade-in-up animation-delay-200">
-            Log in to continue your journey of sustainable shopping and selling within the SUST community.
+            No worries! Enter your username and we'll send you instructions to reset your password.
           </p>
         </div>
       </div>
 
-      {/* Right Pane (Login Form) */}
+      {/* Right Pane (Forgot Password Form) */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 bg-gray-50">
         <div className="w-full max-w-md">
           <div className="animate-fade-in-down">
             <h2 className="text-3xl font-bold text-gray-800 text-center">
-              Sign in to Your Account
+              Reset Your Password
             </h2>
             <p className="mt-2 text-center text-sm text-gray-600">
-              Or{' '}
-              <Link
-                to="/signup"
-                className="font-medium text-green-600 hover:text-green-500 transition-colors"
-              >
-                create a new account
-              </Link>
+              Enter your username to receive password reset instructions
             </p>
           </div>
 
           <form className="mt-8 space-y-6 animate-fade-in-up" onSubmit={handleSubmit}>
-            <div className="rounded-md shadow-sm -space-y-px">
+            <div className="rounded-md shadow-sm">
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -93,47 +80,9 @@ const Login = () => {
                   required
                   value={formData.userName}
                   onChange={handleChange}
-                  className="appearance-none rounded-t-md relative block w-full px-3 py-3 pl-10 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
+                  className="appearance-none rounded-md relative block w-full px-3 py-3 pl-10 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
                   placeholder="Username"
                 />
-              </div>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="appearance-none rounded-b-md relative block w-full px-3 py-3 pl-10 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
-                  placeholder="Password"
-                />
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between text-sm">
-              <div className="flex items-center">
-                <input
-                  id="remember-me"
-                  name="remember-me"
-                  type="checkbox"
-                  className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-                />
-                <label htmlFor="remember-me" className="ml-2 block text-gray-900">
-                  Remember me
-                </label>
-              </div>
-
-              <div className="font-medium">
-                <Link to="/forgot-password" className="text-green-600 hover:text-green-500 transition-colors">
-                  Forgot your password?
-                </Link>
               </div>
             </div>
 
@@ -149,10 +98,19 @@ const Login = () => {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    Signing in...
+                    Sending...
                   </>
-                ) : 'Sign in'}
+                ) : 'Submit'}
               </button>
+            </div>
+
+            <div className="text-center text-sm">
+              <Link
+                to="/login"
+                className="font-medium text-green-600 hover:text-green-500 transition-colors"
+              >
+                Back to login
+              </Link>
             </div>
           </form>
         </div>
@@ -161,5 +119,6 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default ForgotPassword;
+
 

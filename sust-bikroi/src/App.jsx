@@ -4,6 +4,9 @@ import { AuthProvider } from './context/AuthContext';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import VerifyOTP from './pages/VerifyOTP';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import ProductDetail from './pages/ProductDetail';
 import SellPost from './pages/SellPost';
 import CategoryPage from './pages/CategoryPage';
@@ -22,6 +25,9 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/verify-otp" element={<VerifyOTP />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/product/:id" element={<ProductDetail />} />
             <Route path="/products" element={<Products />} />
             <Route path="/sell" element={<SellPost />} />
