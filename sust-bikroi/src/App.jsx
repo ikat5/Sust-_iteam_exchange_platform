@@ -12,6 +12,7 @@ import SellPost from './pages/SellPost';
 import CategoryPage from './pages/CategoryPage';
 import SearchPage from './pages/SearchPage';
 import Profile from './pages/Profile';
+import ChatPage from './pages/Chatpage';
 import Layout from './Layout';
 import Products from './pages/Products';
 
@@ -34,6 +35,7 @@ function App() {
             <Route path="/category/:category" element={<CategoryPage />} />
             <Route path="/search" element={<SearchPage />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/chat" element={<ChatPage />} />
           </Route>
         </Routes>
       </Router>

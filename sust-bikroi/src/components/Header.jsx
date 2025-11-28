@@ -61,6 +61,12 @@ const Header = () => {
             {isAuthenticated ? (
               <div className="flex items-center space-x-5">
                 <Link
+                  to="/chat"
+                  className="text-gray-700 hover:text-green-600 font-medium transition-colors"
+                >
+                  Chat
+                </Link>
+                <Link
                   to="/sell"
                   className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-5 py-2.5 rounded-full font-semibold hover:shadow-lg hover:scale-105 transform transition-all duration-300"
                 >
@@ -95,6 +101,12 @@ const Header = () => {
               </div>
             ) : (
               <div className="flex items-center space-x-2">
+                <Link
+                  to="/chat"
+                  className="text-gray-600 font-medium hover:text-green-600 px-4 py-2 rounded-full transition-colors"
+                >
+                  Chat
+                </Link>
                 <Link
                   to="/login"
                   className="text-gray-600 font-medium hover:text-green-600 px-4 py-2 rounded-full transition-colors"

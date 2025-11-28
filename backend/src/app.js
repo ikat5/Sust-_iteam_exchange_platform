@@ -29,10 +29,12 @@ app.get('/health', (req, res) => {
 });
 
 import userRouter from "./router/user.router.js"
+import chatRouter from "./router/chat.router.js"
 //import productRouter from "./router/product.router.js"
 import productRouter from "./router/product.router.js"
 app.use("/user",userRouter)
 app.use("/product", productRouter)
+app.use("/chats",chatRouter)
 
 
 

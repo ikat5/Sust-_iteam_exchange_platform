@@ -59,6 +59,23 @@ const ProductDetail = () => {
 
   const isOwner = isAuthenticated && user && product && product.owner._id === user._id;
 
+  const handleContactSeller = () => {
+    if (!isAuthenticated) {
+      navigate('/login', { state: { from: `/product/${id}` } });
+      return;
+    }
+
+    navigate('/chat', {
+      state: {
+        peer: {
+          _id: product.owner?._id,
+          fullName: product.owner?.fullName,
+          userName: product.owner?.userName,
+        },
+      },
+    });
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -195,7 +212,10 @@ const ProductDetail = () => {
             {/* Action Buttons */}
             <div className="flex space-x-4">
               {!isOwner && (
-                <button className="flex-1 bg-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-700 transition-colors">
+                <button
+                  onClick={handleContactSeller}
+                  className="flex-1 bg-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-700 transition-colors"
+                >
                   Contact Seller
                 </button>
               )}

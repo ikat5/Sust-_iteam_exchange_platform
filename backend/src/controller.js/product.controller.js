@@ -87,7 +87,7 @@ const getProductsByCategory = asyncHandler(async (req, res) => {
 
   const [products, total] = await Promise.all([
     Product.find({ category: { $regex: categoryRegex } })
-      .populate('owner', 'fullName phoneNumber email studentId')
+      .populate('owner', 'fullName phoneNumber email studentId userName')
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit),
@@ -113,7 +113,7 @@ const getAllProducts = asyncHandler(async (req, res) => {
 
   const [products, total] = await Promise.all([
     Product.find()
-      .populate('owner', 'fullName phoneNumber email studentId')
+      .populate('owner', 'fullName phoneNumber email studentId userName')
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit),
@@ -134,7 +134,7 @@ const getAllProducts = asyncHandler(async (req, res) => {
 // ✅ Get recent 10 products
 const getRecentProducts = asyncHandler(async (req, res) => {
   const products = await Product.find()
-    .populate('owner', 'fullName phoneNumber email studentId')
+    .populate('owner', 'fullName phoneNumber email studentId userName')
     .sort({ createdAt: -1 })
     .limit(10);
   return res.status(200).json(
@@ -164,7 +164,7 @@ const searchProducts = asyncHandler(async (req, res) => {
 
   const [products, total] = await Promise.all([
     Product.find(searchQuery)
-      .populate('owner', 'fullName phoneNumber email studentId')
+      .populate('owner', 'fullName phoneNumber email studentId userName')
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit),
@@ -188,7 +188,7 @@ const getProductById = asyncHandler(async (req, res) => {
   const { productId } = req.params;
   
   const product = await Product.findById(productId)
-    .populate('owner', 'fullName phoneNumber email studentId');
+    .populate('owner', 'fullName phoneNumber email studentId userName');
   
   if (!product) {
     throw new ApiError(404, "Product not found");
