@@ -10,7 +10,7 @@ const Footer = () => {
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-3 mb-5">
               <img src="/logo.jpg" alt="Logo" className="w-12 h-12 rounded-lg"/>
-              <span className="text-2xl font-bold text-gray-800">SUST Item Exchange Platform</span>
+              <span className="text-2xl font-bold text-gray-800">ক্রয়-বিক্রয়, শাবিপ্রবি</span>
             </div>
             <p className="text-gray-600 mb-6 max-w-md">
               The official platform for students of SUST to buy and sell used items, fostering a sust
@@ -63,7 +63,7 @@ const Footer = () => {
         <div className="border-t border-gray-200 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-500 text-sm">
-              © {new Date().getFullYear()} SUST Item Exchange Platform. All rights reserved.
+              © {new Date().getFullYear()} ক্রয়-বিক্রয়, শাবিপ্রবি. All rights reserved.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
               <Link to="/privacy" className="text-gray-500 hover:text-green-600 text-sm transition-colors">Privacy Policy</Link>

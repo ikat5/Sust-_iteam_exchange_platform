@@ -32,7 +32,7 @@ const Header = () => {
           {/* Logo and Site Name */}
           <Link to="/" className="flex items-center space-x-3">
             <img src="/logo.jpg" alt="Logo" className="w-12 h-12 rounded-lg"/>
-            <span className="text-2xl font-bold text-gray-800 tracking-tight">SUST Item Exchange Platform</span>
+            <span className="text-2xl font-bold text-gray-800 tracking-tight">ক্রয়-বিক্রয়, শাবিপ্রবি</span>
           </Link>
 
           {/* Search Bar */}
